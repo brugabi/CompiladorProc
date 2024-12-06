@@ -1,2 +1,2 @@
 # Compiladores
-Compiladore para a linguagem Proc
+Compilador para a linguagem Proc
