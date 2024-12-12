@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include <string.h>
 #include "Analex.h"
+#include "Funcaux.h"
 
 #define TAM_LEXEMA 31
 #define TAM_NUM 30
@@ -14,7 +15,7 @@ TOKEN AnaLex (FILE *fd) {
     char digitos[TAM_NUM] = "";
     int tamD = 0;
 
-    if (tk.processado == true) return tk; // O token atual ainda não foi processado
+    if (!tk.processado == true) return tk; // O token atual ainda não foi processado
 
     tk.processado = false;
     while (1){
@@ -39,7 +40,7 @@ TOKEN AnaLex (FILE *fd) {
             else if (c == ',') { estado = 25; tk.cat = SN; tk.codSN = VIRGULA; return tk;}
             else if (c == '!') { estado = 26;} //diferenca ou negacao
             else if (c == EOF) { tk.cat = FIM_ARQ; return tk; } // FIM DO ARQUIVO
-            else if (c == '\n') contLinha++; //FIM DE LINHA
+            else if (c == '\n') {tk.cat = FIM_EXPR; contLinha++; return tk;} //FIM DE LINHA
             //ID
             else if (c == '_') {
                 estado = 29;
@@ -61,7 +62,7 @@ TOKEN AnaLex (FILE *fd) {
             else if (c == '\'')estado = 37; //pode ser um char, um \n ou um \0
             //STRING
             else if (c == '"') estado = 43; //ESTADO PARA STRING
-            else error("CARACTER INVALIDO NA LINHA ", contLinha);
+            else error("CARACTER INVALIDO NA LINHA");
             break;
         case 4: //COMENTARIO OU DIVISAO
             if (c == '/') estado = 5; // COMENTARIO
@@ -94,7 +95,7 @@ TOKEN AnaLex (FILE *fd) {
             break;
         case 20:
             if (c == '|') {estado = 21; tk.cat = SN; tk.codSN = OP_OR; return tk;} //OPERADOR OR
-            else error("CARACTER INVALIDO NA LINHA ", contLinha);
+            else error("CARACTER INVALIDO NA LINHA");
             break;
         case 22:
             if (c == '&') {estado = 23; tk.cat = SN; tk.codSN = OP_AND; return tk;} //OPERADOR AND
@@ -198,12 +199,12 @@ TOKEN AnaLex (FILE *fd) {
             tk.charcon = lexema[0];
             return tk;
             }
-            else error("ERROR: LEXEMA CHAR INVALIDO NA LINHA NA LINHA: ", contLinha);
+            else error("ERROR: LEXEMA CHAR INVALIDO NA LINHA NA LINHA");
             break;
         case 40:
             if (c == 'n') estado = 41;  //CHAR COM \n
             else if (c == '0') estado = 42; //CHAR COM \0
-            else error("ERROR: LEXEMA CHAR INVALIDO NA LINHA NA LINHA: ", contLinha);
+            else error("ERROR: LEXEMA CHAR INVALIDO NA LINHA NA LINHA");
             break;
         case 41: 
             if (c =='\'') { //ACABOU O CHAR COM \n
@@ -212,7 +213,7 @@ TOKEN AnaLex (FILE *fd) {
                 tk.charcon = '\n';
                 return tk;
                 } 
-            else error("ERROR: LEXEMA CHAR INVALIDO NA LINHA NA LINHA: ", contLinha);
+            else error("ERROR: LEXEMA CHAR INVALIDO NA LINHA NA LINHA");
             break;
         case 42: 
             if (c =='\'') {
@@ -221,7 +222,7 @@ TOKEN AnaLex (FILE *fd) {
                 tk.charcon = '\0'; 
                 return tk;
                 }
-            else error("ERROR: LEXEMA CHAR INVALIDO NA LINHA NA LINHA:", contLinha);
+            else error("ERROR: LEXEMA CHAR INVALIDO NA LINHA NA LINH");
             break;
         case 43: //STRING
             if (c == '"') {
@@ -235,9 +236,52 @@ TOKEN AnaLex (FILE *fd) {
                 lexema[tamL++] = c;
                 lexema[tamL] = '\0';
             }
-            else error("ERROR: LEXEMA STRING INVALIDO NA LINHA NA LINHA:", contLinha);
+            else error("ERROR: LEXEMA STRING INVALIDO NA LINHA NA LINH");
             break;
         }
     }
     
+}
+
+
+const char arrayPR[28][31] = {
+    "const",
+    "pr",
+    "init",
+    "endp",
+    "char",
+    "int",
+    "real",
+    "bool",
+    "do",
+    "while",
+    "endw",
+    "var",
+    "from",
+    "to",
+    "dt",
+    "by",
+    "if",
+    "endv",
+    "elif",
+    "else",
+    "endi",
+    "getout",
+    "getint",
+    "getreal",
+    "getchar",
+    "putint",
+    "putreal",
+    "putchar"  
+};
+
+int is_PR(const char* lexema) {
+        
+    for (int i = 0; i < TAM_PALAVRAS_RESERVADAS; i++) {
+
+        if (strcmp(lexema, arrayPR[i]) == 0) {
+            return i; // É uma palavra reservada
+        }
+    }
+    return -1; // Não é uma palavra reservada
 }

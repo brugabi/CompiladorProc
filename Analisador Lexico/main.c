@@ -26,7 +26,7 @@ void TestaAnalex()
 
         if (tk.cat == FIM_ARQ)
         {
-            printf("Fim do arquivo fonte encontrado!\n");
+            error("Fim do arquivo fonte encontrado!\n");
             break;
         }
 
@@ -201,13 +201,38 @@ void TestaAnalex()
         case LT:
             printf("<LT, %s>", tk.lexema);
             break;
+        case FIM_EXPR:
+            printf("<FIM DA EXPRESSAO ENCONTRADA>\n");
+            break;
         case FIM_ARQ:
             printf("<FIM DO ARQUIVO ENCONTRADO>\n");
             break;
         }
-        if (tk.cat == FIM_ARQ)
-            break; // break do while
-        printf("\n");
+
+        if (tk.cat == FIM_ARQ) {break;} // break do while
+        tk.processado = true;
+    }
+    fclose(fd);
+}
+
+void TestaAnasint() {
+
+    if ((fd = fopen("expressao.txt", "r")) == NULL) {
+        error("Arquivo de expressao nao encontrado!");
+    }
+
+    tk.processado = true; // Garante que o primeiro token seja lido
+
+    while (true) {
+        tk = AnaLex(fd);
+        if (tk.cat == FIM_ARQ) {break;} // break do while
+        //Atrib();
+        if(tk.cat == FIM_EXPR) {
+            printf("Linha %d: expressão sintaticamente correta!\n\n", contLinha);
+        } else {
+            error("Expressão sintaticamente incorreta!\n\n");
+        }
+        tk.processado = true;
     }
     fclose(fd);
 }
@@ -215,7 +240,7 @@ void TestaAnalex()
 int main()
 {
 
-    system("chp 65001"); // Troca a codificação para UTF-8
+    //system("chp 65001"); // Troca a codificação para UTF-8
 
     contLinha = 1;
     printf("\n\n[-------------------Análise Léxica -------------------]\n");
@@ -223,5 +248,6 @@ int main()
 
     contLinha = 1;
     printf("\n\n[-------------------Análise Sintática ----------------]\n");
-    
+
+    return 0;
 }
