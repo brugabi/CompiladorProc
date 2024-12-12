@@ -7,42 +7,38 @@
 #define TAM_LEXEMA 31
 #define TAM_NUM 30
 
-void error(char msg[], int contLinha) {
-    printf("%s%d\n", msg, contLinha);
-    exit(1);
-}
-
-
 TOKEN AnaLex (FILE *fd) {
     int estado = 0;
     char lexema[TAM_MAX_LEXEMA] = "";
     int tamL = 0;
     char digitos[TAM_NUM] = "";
     int tamD = 0;
-    TOKEN t;
 
+    if (tk.processado == true) return tk; // O token atual ainda não foi processado
+
+    tk.processado = false;
     while (1){
         char c = fgetc(fd);
         switch (estado){
         case 0:
             if (c == ' ' || c == '\t') estado = 0;
             //SINAIS
-            else if (c == '+') { estado = 1; t.cat = SN; t.codSN = ADICAO; return t;}
-            else if (c == '-') { estado = 2; t.cat = SN; t.codSN = SUBTRACAO; return t;}
-            else if (c == '*') { estado = 3; t.cat = SN; t.codSN = MULTI; return t;}
+            else if (c == '+') { estado = 1; tk.cat = SN; tk.codSN = ADICAO; return tk;}
+            else if (c == '-') { estado = 2; tk.cat = SN; tk.codSN = SUBTRACAO; return tk;}
+            else if (c == '*') { estado = 3; tk.cat = SN; tk.codSN = MULTI; return tk;}
             else if (c == '/') { estado = 4;} //divisao ou comentariio
             else if (c == '>') { estado = 7;} //maior ou maior igual
             else if (c == '<') { estado = 10;} //menor ou menor igual
             else if (c == '=') {estado = 13;} //atribuicao ou igualdade
-            else if (c == '(') { estado = 16; t.cat = SN; t.codSN = ABRE_PAR; return t;}
-            else if (c == ')') { estado = 17; t.cat = SN; t.codSN = FECHA_PAR; return t;}
-            else if (c == '[') { estado = 18; t.cat = SN; t.codSN = ABRE_COL; return t;}
-            else if (c == ']') { estado = 19; t.cat = SN; t.codSN = FECHA_COL; return t;}
+            else if (c == '(') { estado = 16; tk.cat = SN; tk.codSN = ABRE_PAR; return tk;}
+            else if (c == ')') { estado = 17; tk.cat = SN; tk.codSN = FECHA_PAR; return tk;}
+            else if (c == '[') { estado = 18; tk.cat = SN; tk.codSN = ABRE_COL; return tk;}
+            else if (c == ']') { estado = 19; tk.cat = SN; tk.codSN = FECHA_COL; return tk;}
             else if (c == '|') {estado = 20;} //talvez operador ou
             else if (c == '&') { estado = 22;} // operador and ou endereco
-            else if (c == ',') { estado = 25; t.cat = SN; t.codSN = VIRGULA; return t;}
+            else if (c == ',') { estado = 25; tk.cat = SN; tk.codSN = VIRGULA; return tk;}
             else if (c == '!') { estado = 26;} //diferenca ou negacao
-            else if (c == EOF) { t.cat = FIM_ARQ; return t; } // FIM DO ARQUIVO
+            else if (c == EOF) { tk.cat = FIM_ARQ; return tk; } // FIM DO ARQUIVO
             else if (c == '\n') contLinha++; //FIM DE LINHA
             //ID
             else if (c == '_') {
@@ -73,9 +69,9 @@ TOKEN AnaLex (FILE *fd) {
                 //DIVISAO
                 estado = 6;
                 ungetc(c,fd);
-                t.cat = SN;
-                t.codSN = DIV;
-                return t;
+                tk.cat = SN;
+                tk.codSN = DIV;
+                return tk;
             }
             break;
         case 5: //COMENTARIO
@@ -85,34 +81,34 @@ TOKEN AnaLex (FILE *fd) {
             }
             break;
         case 7:
-            if (c == '=') {estado = 8; t.cat = SN; t.codSN = MAIOR_IGUAL; return t;} //MAIOR IGUAL
-            else {estado = 9; ungetc(c,fd); t.cat = SN; t.codSN = MAIOR; return t;} //MAIOR
+            if (c == '=') {estado = 8; tk.cat = SN; tk.codSN = MAIOR_IGUAL; return tk;} //MAIOR IGUAL
+            else {estado = 9; ungetc(c,fd); tk.cat = SN; tk.codSN = MAIOR; return tk;} //MAIOR
             break;
         case 10:
-            if (c == '=') {estado = 11; t.cat = SN; t.codSN = MENOR_IGUAL; return t;} //MENOR IGUAL
-            else {estado = 12; ungetc(c,fd); t.cat = SN; t.codSN = MENOR; return t;} //MENOR
+            if (c == '=') {estado = 11; tk.cat = SN; tk.codSN = MENOR_IGUAL; return tk;} //MENOR IGUAL
+            else {estado = 12; ungetc(c,fd); tk.cat = SN; tk.codSN = MENOR; return tk;} //MENOR
             break;
         case 13: //ATRIB OU IGUALDADE
-            if (c == '=') {estado = 14; t.cat = SN; t.codSN = IGUALDADE; return t;} //IGUALDADE
-            else {estado = 15; ungetc(c,fd); t.cat = SN; t.codSN = ATRIB; return t;} //ATRIBUICAO
+            if (c == '=') {estado = 14; tk.cat = SN; tk.codSN = IGUALDADE; return tk;} //IGUALDADE
+            else {estado = 15; ungetc(c,fd); tk.cat = SN; tk.codSN = ATRIB; return tk;} //ATRIBUICAO
             break;
         case 20:
-            if (c == '|') {estado = 21; t.cat = SN; t.codSN = OP_OR; return t;} //OPERADOR OR
+            if (c == '|') {estado = 21; tk.cat = SN; tk.codSN = OP_OR; return tk;} //OPERADOR OR
             else error("CARACTER INVALIDO NA LINHA ", contLinha);
             break;
         case 22:
-            if (c == '&') {estado = 23; t.cat = SN; t.codSN = OP_AND; return t;} //OPERADOR AND
+            if (c == '&') {estado = 23; tk.cat = SN; tk.codSN = OP_AND; return tk;} //OPERADOR AND
             else { // E COMERCIAL
                 estado = 24;
                 ungetc(c, fd);
-                t.cat = SN;
-                t.codSN = ECOM;
-                return t;
+                tk.cat = SN;
+                tk.codSN = ECOM;
+                return tk;
             }
             break;
         case 26:
-            if (c == '=') {estado = 27; t.cat = SN; t.codSN = DIF; return t;} //DIFERENCA
-            else {estado = 28; ungetc(c,fd); t.cat = SN; t.codSN = NEGACAO; return t;} //NEGACAO
+            if (c == '=') {estado = 27; tk.cat = SN; tk.codSN = DIF; return tk;} //DIFERENCA
+            else {estado = 28; ungetc(c,fd); tk.cat = SN; tk.codSN = NEGACAO; return tk;} //NEGACAO
             break;
         //CASOS DE ID
         case 29: //UNDERLINE OPCIONAL
@@ -138,13 +134,13 @@ TOKEN AnaLex (FILE *fd) {
                 int checkPR = is_PR(lexema);
                 //VERIFICAR PALAVRA RESERVADA
                 if (checkPR >= 0) {
-                    t.cat = PALAVRAS_RESERVADAS;
-                    t.codPR = checkPR;
-                    return t;
+                    tk.cat = PALAVRAS_RESERVADAS;
+                    tk.codPR = checkPR;
+                    return tk;
                 }
-                else {t.cat = ID;}
-                strcpy(t.lexema, lexema);
-                return t;
+                else {tk.cat = ID;}
+                strcpy(tk.lexema, lexema);
+                return tk;
             }
             break;
         case 32: //INT OU REAL
@@ -161,9 +157,9 @@ TOKEN AnaLex (FILE *fd) {
             else { //ACABOU O INT
                 estado = 33;
                 ungetc(c, fd);
-                t.cat = CT_I;
-                t.valINT = atoi(digitos);
-                return t;
+                tk.cat = CT_I;
+                tk.valINT = atoi(digitos);
+                return tk;
             }
             break;
         case 34: //CASO DO REAL
@@ -182,9 +178,9 @@ TOKEN AnaLex (FILE *fd) {
             else { //ACABOU O REAL
                 estado = 36;
                 ungetc(c, fd);
-                t.cat = CT_R;
-                t.valREAL = atof(digitos);
-                return t; 
+                tk.cat = CT_R;
+                tk.valREAL = atof(digitos);
+                return tk; 
             }
             break;
         case 37: //CHAR
@@ -198,9 +194,9 @@ TOKEN AnaLex (FILE *fd) {
         case 38: 
             if(c =='\'') { //ACABOU O CHAR COM 1 CARACTER
             estado = 39;
-            t.cat = CT_C;
-            t.charcon = lexema[0];
-            return t;
+            tk.cat = CT_C;
+            tk.charcon = lexema[0];
+            return tk;
             }
             else error("ERROR: LEXEMA CHAR INVALIDO NA LINHA NA LINHA: ", contLinha);
             break;
@@ -212,27 +208,27 @@ TOKEN AnaLex (FILE *fd) {
         case 41: 
             if (c =='\'') { //ACABOU O CHAR COM \n
                 estado=45; 
-                t.cat = CT_C;
-                t.charcon = '\n';
-                return t;
+                tk.cat = CT_C;
+                tk.charcon = '\n';
+                return tk;
                 } 
             else error("ERROR: LEXEMA CHAR INVALIDO NA LINHA NA LINHA: ", contLinha);
             break;
         case 42: 
             if (c =='\'') {
                 estado=46; //ACABOU O CHAR COM \0
-                t.cat = CT_C;
-                t.charcon = '\0'; 
-                return t;
+                tk.cat = CT_C;
+                tk.charcon = '\0'; 
+                return tk;
                 }
             else error("ERROR: LEXEMA CHAR INVALIDO NA LINHA NA LINHA:", contLinha);
             break;
         case 43: //STRING
             if (c == '"') {
                 estado = 44;
-                t.cat = LT;
-                strcpy(t.lexema, lexema);
-                return t;
+                tk.cat = LT;
+                strcpy(tk.lexema, lexema);
+                return tk;
             }
             else if(isprint(c) && c != '\n') { //ACABOU A STRING
                 estado = 43;

@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "Analex.h"
+#include "Anasint.h"
 #include "Funcaux.h"
 
 FILE *fd;

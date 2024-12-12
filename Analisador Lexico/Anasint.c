@@ -26,7 +26,7 @@ void Atrib() {
 	}
 	tk.processado = true;
 	tk = AnaLex(fd);
-	if (tk.cat != SN || tk.codigo != ATRIB) {
+	if (tk.cat != SN || tk.codSN != ATRIB) {
 		erro("Sinal de atribuição esperado!");
 	}
 	tk.processado = true;
@@ -48,9 +48,9 @@ void Termo(){
 
 void Resto() {
  
-	t = Analex(fd);
-	if (t.cat == SN && (t.codigo == ADICAO || t.codigo == SUBTRACAO)) {
-		t.processado = true;
+	tk = AnaLex(fd);
+	if (tk.cat == SN && (tk.codSN == ADICAO || tk.codSN == SUBTRACAO)) {
+		tk.processado = true;
 		Termo();
 		Resto();
 	}
@@ -58,9 +58,9 @@ void Resto() {
 
 void Sobra() {
 
-	t = Analex(fd);
-	if(t.cat == SN && (t.codigo == MULTIPLIC || t.codigo == DIVISAO)) {
-		t.processado = true;
+	tk = AnaLex(fd);
+	if(tk.cat == SN && (tk.codSN == DIV || tk.codSN == MULTI)) {
+		tk.processado = true;
 		Fator();
 		Sobra();
 	}
@@ -68,23 +68,23 @@ void Sobra() {
 
 void Fator() {
 
-	t = Analex(fd);
-	if (t.cat == ID) { 
-		t.processado = true;
+	tk = AnaLex(fd);
+	if (tk.cat == ID) { 
+		tk.processado = true;
 		/*TRATAR IDENTIFICADOR*/
 	}
-	else if (t.cat == CT_I) {
-		t.processado = true; 
+	else if (tk.cat == CT_I) {
+		tk.processado = true; 
 		/*TRATAR CONSTANTE INTEIRA*/
 	}
-	else if (t.cat == SN && t.codigo == ABRE_PAR) {
-		t.processado = true;
+	else if (tk.cat == SN && tk.codSN == ABRE_PAR) {
+		tk.processado = true;
 		Expr();
-		if(t.cat != SN || t.codigo != FECHA_PAR) {
+		if(tk.cat != SN || tk.codSN != FECHA_PAR) {
 			erro("Fecha parênteses esperado!");
 		}
 		else {
-			t.processado = true;
+			tk.processado = true;
 		}
 	}
 	else {
