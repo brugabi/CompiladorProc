@@ -12,7 +12,8 @@ enum SINAIS {ADICAO = 1, SUBTRACAO, MULTI, DIV, MAIOR, MAIOR_IGUAL, MENOR, MENOR
                 FECHA_PAR, ABRE_COL, FECHA_COL, OP_OR, ECOM, OP_AND, VIRGULA, NEGACAO, DIF}; //ECOM = E COMERCIAL
 
 typedef struct token{
-    enum TOKEN_CAT cat;
+    enum TOKEN_CAT cat; // deve receber o enum TOKEN_CAT
+    bool processado; // Indica se o token foi processado
     union{
         int codPR;
         int codSN;
@@ -102,6 +103,12 @@ int is_PR(const char* lexema) {
     return -1; // Não é uma palavra reservada
 }
 
-#endif
+/* VARIAVEIR GLOBAIS */
+extern TOKEN tk;
+extern FILE *fd;
+extern int contLinha;
 
-int contLinha = 1;
+/* Assinaruras de funções */
+TOKEN AnaLex(FILE *fd);
+
+#endif
