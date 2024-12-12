@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "Analex.h"
+#include "Funcaux.h"
 
 FILE *fd;
 TOKEN tk;
@@ -14,7 +15,7 @@ void TestaAnalex()
 {
 
     if ((fd = fopen("expressao.dat", "r")) == NULL)
-        error("ARQUIVO DE EXPRESSAO NAO ENCONTRADO!!", contLinha);
+        error("ARQUIVO DE EXPRESSAO NAO ENCONTRADO!!");
 
     printf("\nLINHA %d\n", contLinha);
     tk.processado = true; // Garante que o proximo token seja processado

@@ -4,7 +4,7 @@
 #include "Analex.h"
 #include "Funcaux.h"
 
-void erro(char msg[]) {
+void error(char msg[]) {
     printf("LINHA %d: %s\n", contLinha, msg);
     exit(1);
 }

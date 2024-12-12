@@ -1,6 +1,9 @@
 #ifndef ANALEX
 #define ANALEX
 
+#include <stdio.h>
+#include <stdbool.h>
+
 #define TAM_MAX_LEXEMA 31
 #define TAM_PALAVRAS_RESERVADAS 28
 

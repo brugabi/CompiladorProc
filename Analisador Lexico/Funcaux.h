@@ -9,6 +9,6 @@ extern bool mostraArvore;
 extern char TABS[200];
 extern int contLinha;
 
-void erro(char msg[]);
+void error(char msg[]);
 
 #endif
