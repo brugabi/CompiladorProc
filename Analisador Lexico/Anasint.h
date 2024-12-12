@@ -21,4 +21,10 @@ void Resto();
 void Sobra();
 void Fator();
 
+void prog();
+void cmd();
+void decl_def_proc();
+void decl_list_var();
+void decl_var();
+
 #endif // ANASINT

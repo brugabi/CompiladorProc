@@ -7,6 +7,7 @@
 
 #define TAM_LEXEMA 31
 #define TAM_NUM 30
+#define TAM_MAX_PALAVRAS_RESERVADAS 32
 
 TOKEN AnaLex (FILE *fd) {
     int estado = 0;
@@ -41,6 +42,8 @@ TOKEN AnaLex (FILE *fd) {
             else if (c == '!') { estado = 26;} //diferenca ou negacao
             else if (c == EOF) { tk.cat = FIM_ARQ; return tk; } // FIM DO ARQUIVO
             else if (c == '\n') {tk.cat = FIM_EXPR; contLinha++; return tk;} //FIM DE LINHA
+            else if (c == '{') {estado = 47; tk.cat = SN; tk.codSN = ABRE_CHAVES; return tk;}
+            else if (c == '}') {estado = 48; tk.cat = SN; tk.codSN = FECHA_CHAVES; return tk;}
             //ID
             else if (c == '_') {
                 estado = 29;
@@ -244,7 +247,7 @@ TOKEN AnaLex (FILE *fd) {
 }
 
 
-const char arrayPR[28][31] = {
+const char arrayPR[TAM_MAX_PALAVRAS_RESERVADAS][31] = {
     "const",
     "pr",
     "init",
@@ -272,7 +275,11 @@ const char arrayPR[28][31] = {
     "getchar",
     "putint",
     "putreal",
-    "putchar"  
+    "putchar",
+    "putstring",
+    "getstring",
+    "prot",
+    "def" 
 };
 
 int is_PR(const char* lexema) {
