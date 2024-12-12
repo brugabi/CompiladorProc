@@ -12,6 +12,7 @@ TOKEN tk;
 int contLinha;
 char TABS[200] = "";
 
+
 void TestaAnalex()
 {
 
@@ -248,6 +249,7 @@ int main()
 
     contLinha = 1;
     printf("\n\n[-------------------Análise Sintática ----------------]\n");
+
 
     return 0;
 }

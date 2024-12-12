@@ -18,6 +18,11 @@
 #include "Anasint.h"
 #include "Funcaux.h"
 
+int MAX_ARRAY_DIM = 100;
+
+void prog() {
+	escopo_atual = GBL;
+}
 
 void Atrib() {
  
@@ -31,6 +36,45 @@ void Atrib() {
 	}
 	tk.processado = true;
 	Expr();  
+}
+
+void decl_var() {
+	
+	int k, i;
+	bool eh_array;
+	int cont_dim = 0;
+	int tam_dims[MAX_ARRAY_DIM];
+
+	if (tk.cat != ID) error("Identificador esperado!");
+	tk = AnaLex(fd);
+	eh_array = ((tk.cat == SN) && (tk.codSN == ABRE_COL));
+	if (eh_array) {
+		while ((tk.cat == SN) && (tk.codSN == ABRE_COL)) {
+			cont_dim++;
+			tk = AnaLex(fd);
+			if (tk.cat == CT_I) {
+				tam_dims[cont_dim-1] = tk.valINT;
+			} else if (tk.cat == ID) {
+				
+			}
+		}
+		{
+			/* code */
+		}
+		
+	}
+}
+
+void decl_list_var() {
+	bool eh_constante;
+	int tipo;
+
+	eh_constante = ((tk.cat == PALAVRAS_RESERVADAS) && tk.codPR == CONST);
+	if (eh_constante) tk = AnaLex(fd);
+	if (!((tk.cat == PALAVRAS_RESERVADAS) && ((tk.codPR == INT) || (tk.codPR == REAL) || (tk.codPR == CHAR) || (tk.codPR == BOOL)))) error("Tipo esperado.");
+
+	tipo = tk.codPR;
+	decl_var
 }
 
 
